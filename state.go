@@ -59,6 +59,7 @@ const (
 	ApiErrorRun
 	ApiErrorError
 	ApiErrorPanic
+	ApiErrorQuiet
 )
 
 /* }}} */
@@ -1631,7 +1632,7 @@ func (ls *LState) PCall(nargs, nret int, errfunc *LFunction) (err error) {
 					runtime.Stack(buf, false)
 					err.(*ApiError).StackTrace = strings.Trim(string(buf), "\000") + "\n" + ls.stackTrace(0)
 				}
-			} else {
+			} else if rcv.(*ApiError).Type != ApiErrorQuiet {
 				err = rcv.(*ApiError)
 			}
 			if errfunc != nil {
@@ -1657,7 +1658,7 @@ func (ls *LState) PCall(nargs, nret int, errfunc *LFunction) (err error) {
 				}()
 				ls.Call(1, 1)
 				err = newApiError(ApiErrorError, ls.Get(-1))
-			} else if len(err.(*ApiError).StackTrace) == 0 {
+			} else if err != nil && len(err.(*ApiError).StackTrace) == 0 {
 				err.(*ApiError).StackTrace = ls.stackTrace(0)
 			}
 			ls.stack.SetSp(sp)
@@ -1673,6 +1674,10 @@ func (ls *LState) PCall(nargs, nret int, errfunc *LFunction) (err error) {
 	ls.Call(nargs, nret)
 
 	return
+}
+
+func (ls *LState) Exit() {
+	panic(newApiError(ApiErrorQuiet, nil))
 }
 
 func (ls *LState) GPCall(fn LGFunction, data LValue) error {
