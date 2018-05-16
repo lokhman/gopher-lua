@@ -7,8 +7,6 @@ const (
 	LoadLibName = "package"
 	// TabLibName is the name of the table Library.
 	TabLibName = "table"
-	// IoLibName is the name of the io Library.
-	IoLibName = "io"
 	// OsLibName is the name of the os Library.
 	OsLibName = "os"
 	// StringLibName is the name of the string Library.
@@ -17,8 +15,6 @@ const (
 	MathLibName = "math"
 	// DebugLibName is the name of the debug Library.
 	DebugLibName = "debug"
-	// ChannelLibName is the name of the channel Library.
-	ChannelLibName = "channel"
 	// CoroutineLibName is the name of the coroutine Library.
 	CoroutineLibName = "coroutine"
 )
@@ -29,16 +25,14 @@ type luaLib struct {
 }
 
 var luaLibs = []luaLib{
-	luaLib{LoadLibName, OpenPackage},
-	luaLib{BaseLibName, OpenBase},
-	luaLib{TabLibName, OpenTable},
-	luaLib{IoLibName, OpenIo},
-	luaLib{OsLibName, OpenOs},
-	luaLib{StringLibName, OpenString},
-	luaLib{MathLibName, OpenMath},
-	luaLib{DebugLibName, OpenDebug},
-	luaLib{ChannelLibName, OpenChannel},
-	luaLib{CoroutineLibName, OpenCoroutine},
+	{LoadLibName, OpenPackage},
+	{BaseLibName, OpenBase},
+	{TabLibName, OpenTable},
+	{OsLibName, OpenOs},
+	{StringLibName, OpenString},
+	{MathLibName, OpenMath},
+	{DebugLibName, OpenDebug},
+	{CoroutineLibName, OpenCoroutine},
 }
 
 // OpenLibs loads the built-in libraries. It is equivalent to running OpenLoad,

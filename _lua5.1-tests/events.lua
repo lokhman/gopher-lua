@@ -1,4 +1,4 @@
-print('testing metatables')
+_print('testing metatables')
 
 X = 20; B = 30
 
@@ -293,7 +293,7 @@ assert(i == 3 and x[1] == 3 and x[3] == 5)
 assert(_G.X == 20)
 assert(_G == getfenv(0))
 
-print'+'
+_print'+'
 
 local _g = _G
 setfenv(1, setmetatable({}, {__index=function (_,k) return _g[k] end}))
@@ -324,7 +324,7 @@ a = {}
 rawset(a, "x", 1, 2, 3)
 assert(a.x == 1 and rawget(a, "x", 3) == 1)
 
-print '+'
+_print '+'
 --]]
 
 -- testing metatables for basic types
@@ -357,6 +357,6 @@ assert(getmetatable(nil) == nil)
 debug.setmetatable(nil, {})
 
 
-print 'OK'
+_print 'OK'
 
 return 12

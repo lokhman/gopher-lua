@@ -1,4 +1,4 @@
-print('testing garbage collection')
+_print('testing garbage collection')
 
 collectgarbage()
 
@@ -10,7 +10,7 @@ limit = 5000
 
 contCreate = 0
 
-print('tables')
+_print('tables')
 while contCreate <= limit do
   local a = {}; a = nil
   contCreate = contCreate+1
@@ -19,7 +19,7 @@ end
 a = "a"
 
 contCreate = 0
-print('strings')
+_print('strings')
 while contCreate <= limit do
   a = contCreate .. "b";
   a = string.gsub(a, '(%d%d*)', string.upper)
@@ -32,7 +32,7 @@ contCreate = 0
 
 a = {}
 
-print('functions')
+_print('functions')
 function a:test ()
   while contCreate <= limit do
     loadstring(string.format("function temp(a) return 'a%d' end", contCreate))()
@@ -47,7 +47,7 @@ a:test()
 do local f = function () end end
 
 
-print("functions with errors")
+_print("functions with errors")
 prog = [[
 do
   a = 10;
@@ -68,7 +68,7 @@ do
   end
 end
 
-print('long strings')
+_print('long strings')
 x = "01234567890123456789012345678901234567890123456789012345678901234567890123456789"
 assert(string.len(x)==80)
 s = ''
@@ -147,7 +147,7 @@ for i=1,lim do a[i] = i end
 for i=1,lim do assert(a[i] == i) end
 
 
-print('weak tables')
+_print('weak tables')
 a = {}; setmetatable(a, {__mode = 'k'});
 -- fill a with some `collectable' indices
 for i=1,lim do a[{}] = i end
@@ -256,7 +256,7 @@ assert(not pcall(collectgarbage))
 
 
 if not rawget(_G, "_soft") then
-  print("deep structures")
+  _print("deep structures")
   local a = {}
   for i = 1,200000 do
     a = {next = a}
@@ -286,8 +286,8 @@ end
 
 -- create a userdata to be collected when state is closed
 do
-  local newproxy,assert,type,print,getmetatable =
-        newproxy,assert,type,print,getmetatable
+  local newproxy,assert,type,_print,getmetatable =
+        newproxy,assert,type,_print,getmetatable
   local u = newproxy(true)
   local tt = getmetatable(u)
   ___Glob = {u}   -- avoid udata being collected before program end
@@ -297,7 +297,7 @@ do
     local a = 'xuxu'..(10+3)..'joao', {}
     ___Glob = o  -- ressurect object!
     newproxy(o)  -- creates a new one with same metatable
-    print(">>> closing state " .. "<<<\n")
+    _print(">>> closing state " .. "<<<\n")
   end
 end
 
@@ -309,4 +309,4 @@ do
   for i = 1,10 do table.insert(___Glob, newproxy(u)) end
 end
 
-print('OK')
+_print('OK')

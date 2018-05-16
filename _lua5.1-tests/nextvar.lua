@@ -1,4 +1,4 @@
-print('testing tables, next, and for')
+_print('testing tables, next, and for')
 
 local a = {}
 
@@ -39,11 +39,11 @@ while a < lim do
   a = math.ceil(a*1.3)
 end
 
- 
+
 local function check (t, na, nh)
   local a, h = T.querytab(t)
   if a ~= na or h ~= nh then
-    print(na, nh, a, h)
+    _print(na, nh, a, h)
     assert(nil)
   end
 end
@@ -54,7 +54,7 @@ local s = 'return {'
 for i=1,lim do
   s = s..i..','
   local s = s
-  for k=0,lim do 
+  for k=0,lim do
     local t = loadstring(s..'}')()
     assert(#t == i)
     check(t, fb(i), mp2(k))
@@ -76,7 +76,7 @@ for k=0,lim do
 end
 
 
-print'+'
+_print'+'
 
 -- testing tables dynamically built
 local lim = 130
@@ -140,7 +140,7 @@ assert(#{nil} == 0)
 assert(#{nil, nil} == 0)
 assert(#{nil, nil, nil} == 0)
 assert(#{nil, nil, nil, nil} == 0)
-print'+'
+_print'+'
 
 
 local nofind = {}
@@ -188,8 +188,8 @@ assert(table.foreachi({'a', 'b', 'c'}, function (i,v)
        end) == 'b')
 
 
-assert(print==find("print") and print == find1("print"))
-assert(_G["print"]==find("print"))
+assert(_print==find("_print") and _print == find1("_print"))
+assert(_G["_print"]==find("_print"))
 assert(assert==find1("assert"))
 assert(nofind==find("return"))
 assert(not find1("return"))
@@ -197,7 +197,7 @@ _G["ret" .. "urn"] = nil
 assert(nofind==find("return"))
 _G["xxx"] = 1
 assert(xxx==find("xxx"))
-print('+')
+_print('+')
 
 a = {}
 for i=0,10000 do
@@ -238,14 +238,14 @@ local function foo ()
   setfenv(foo, n)
   assert(getfenv(foo) == getfenv(1))
   assert(getfenv(foo) == n)
-  assert(print == nil and gl1 == 3)
+  assert(_print == nil and gl1 == 3)
   gl1 = nil
   gl = 1
   assert(n.gl == 1 and next(n, 'gl') == nil)
 end
 foo()
 
-print'+'
+_print'+'
 
 local function checknext (a)
   local b = {}
@@ -278,7 +278,7 @@ assert(table.maxn{} == 0)
 assert(table.maxn{["1000"] = true} == 0)
 assert(table.maxn{["1000"] = true, [24.5] = 3} == 24.5)
 assert(table.maxn{[1000] = true} == 1000)
-assert(table.maxn{[10] = true, [100*math.pi] = print} == 100*math.pi)
+assert(table.maxn{[10] = true, [100*math.pi] = _print} == 100*math.pi)
 
 
 -- int overflow
@@ -286,7 +286,7 @@ a = {}
 for i=0,50 do a[math.pow(2,i)] = true end
 assert(a[table.getn(a)])
 
-print("+")
+_print("+")
 
 
 -- erasing values
@@ -340,7 +340,7 @@ assert(table.remove(a, 1) == 'd')
 assert(table.remove(a, 1) == 'a')
 assert(table.remove(a, 1) == 'b')
 assert(table.getn(a) == 0 and a.n == nil)
-print("+")
+_print("+")
 
 a = {}
 for i=1,1000 do
@@ -393,4 +393,4 @@ for n,a,b,c,d in f(5,3) do
 end
 assert(x == 5)
 
-print"OK"
+_print"OK"

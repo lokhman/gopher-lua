@@ -1,4 +1,4 @@
-print('testing local variables plus some extra stuff')
+_print('testing local variables plus some extra stuff')
 
 do
   local i = 10
@@ -75,7 +75,7 @@ local function foo (s)
 end
 
 assert(getfenv(foo("")) == _G)
-local a = {loadstring = loadstring} 
+local a = {loadstring = loadstring}
 setfenv(foo, a)
 assert(getfenv(foo("")) == _G)
 setfenv(0, a)  -- change global environment
@@ -103,13 +103,13 @@ for i=2,31 do
   p =2*p
 end
 
-print'+'
+_print'+'
 
 
 if rawget(_G, "querytab") then
   -- testing clearing of dead elements from tables
   collectgarbage("stop")   -- stop GC
-  local a = {[{}] = 4, [3] = 0, alo = 1, 
+  local a = {[{}] = 4, [3] = 0, alo = 1,
              a1234567890123456789012345678901234567890 = 10}
 
   local t = querytab(a)
@@ -122,6 +122,6 @@ if rawget(_G, "querytab") then
   end
 end
 
-print('OK')
+_print('OK')
 
 return 5,f

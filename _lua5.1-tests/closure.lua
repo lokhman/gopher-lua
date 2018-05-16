@@ -1,4 +1,4 @@
-print "testing closures and coroutines"
+_print "testing closures and coroutines"
 --[[
 
 local A,B = 0,{g=10}
@@ -141,7 +141,7 @@ repeat
 until i > 10 or a[i]() ~= x
 assert(i == 11 and a[1]() == 1 and a[3]() == 3 and i == 4)
 
-print'+'
+_print'+'
 
 
 -- test for correctly closing upvalues in tail calls of vararg functions
@@ -366,11 +366,11 @@ assert(_G.f() == 12)
 
 
 if not T then
-  (Message or print)('\a\n >>> testC not active: skipping yield/hook tests <<<\n\a')
+  (Message or _print)('\a\n >>> testC not active: skipping yield/hook tests <<<\n\a')
 else
 
   local turn
-  
+
   function fact (t, x)
     assert(turn == t)
     if x == 0 then return 1
@@ -422,4 +422,4 @@ assert(select(2, coroutine.resume(co)) == a)
 assert(select(2, coroutine.resume(co)) == a.a)
 
 
-print'OK'
+_print'OK'

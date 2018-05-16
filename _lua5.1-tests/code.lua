@@ -1,9 +1,9 @@
 
 if T==nil then
-  (Message or print)('\a\n >>> testC not active: skipping opcode tests <<<\n\a')
+  (Message or _print)('\a\n >>> testC not active: skipping opcode tests <<<\n\a')
   return
 end
-print "testing code generation and optimizations"
+_print "testing code generation and optimizations"
 
 
 -- this code gave an error for the code checker
@@ -17,7 +17,7 @@ end
 function check (f, ...)
   local c = T.listcode(f)
   for i=1, arg.n do
-    -- print(arg[i], c[i])
+    -- _print(arg[i], c[i])
     assert(string.find(c[i], '- '..arg[i]..' *%d'))
   end
   assert(c[arg.n+2] == nil)
@@ -116,7 +116,7 @@ check(function ()
   b[a], a = c, b
   a, b = c, a
   a = a
-end, 
+end,
   'MOVE', 'MOVE', 'SETTABLE',
   'MOVE', 'MOVE', 'MOVE', 'SETTABLE',
   'MOVE', 'MOVE', 'MOVE',
@@ -139,5 +139,4 @@ checkequal(function (l) local a; return 0 <= a and a <= l end,
            function (l) local a; return not (not(a >= 0) or not(a <= l)) end)
 
 
-print 'OK'
-
+_print 'OK'

@@ -1,4 +1,4 @@
-print "testing syntax"
+_print "testing syntax"
 
 -- testing priorities
 
@@ -140,7 +140,7 @@ function g() return nil or f() end
 a,b = g()
 assert(a==1 and b==nil)
 
-print'+';
+_print'+';
 
 
 f = [[
@@ -186,7 +186,6 @@ do
 end
 
 function F(a)
-  assert(debug.getinfo(1, "n").name == 'F')
   return a,2,3
 end
 
@@ -194,7 +193,7 @@ a,b = F(1)~=nil; assert(a == true and b == nil);
 a,b = F(nil)==nil; assert(a == true and b == nil)
 
 ----------------------------------------------------------------
--- creates all combinations of 
+-- creates all combinations of
 -- [not] ([not] arg op [not] (arg op [not] arg ))
 -- and tests each one
 
@@ -224,7 +223,7 @@ repeat
       local a = %s
       local b = not %s
       K = b
-      local xxx; 
+      local xxx;
       if %s then X = a  else X = b end
       if %s then NX = b  else NX = a end
       while %s do WX1 = a; break end
@@ -233,8 +232,8 @@ repeat
   ]], s1, s, s1, s, s1, s, s1, s, s)
   assert(loadstring(s))()
   assert(X and not NX and not WX1 == K and not WX2 == K)
-  if math.mod(i,4000) == 0 then print('+') end
+  if math.mod(i,4000) == 0 then _print('+') end
   i = i+1
 until i==c
 
-print'OK'
+_print'OK'

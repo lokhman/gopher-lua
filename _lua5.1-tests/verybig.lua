@@ -1,6 +1,6 @@
 if rawget(_G, "_soft") then return 10 end
 
-print "testing large programs (>64k)"
+_print "testing large programs (>64k)"
 
 -- template to create a very big test file
 prog = [[$
@@ -44,7 +44,7 @@ require "checktable"
 stat(b)
 
 a = nil; b = nil
-print'+'
+_print'+'
 
 function f(x) b=x end
 
@@ -95,6 +95,5 @@ end
 io.close()
 result = dofile(file)
 assert(os.remove(file))
-print'OK'
+_print'OK'
 return result
-

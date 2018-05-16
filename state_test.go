@@ -19,7 +19,7 @@ func TestCallStackOverflow(t *testing.T) {
       a()
     end
     local function c()
-      print(_printregs())
+      _print(_printregs())
       b()
     end
     c()
@@ -33,7 +33,7 @@ func TestSkipOpenLibs(t *testing.T) {
 		"attempt to call a non-function object")
 	L2 := NewState()
 	defer L2.Close()
-	errorIfScriptFail(t, L2, `print("")`)
+	errorIfScriptFail(t, L2, `_print("")`)
 }
 
 func TestGetAndReplace(t *testing.T) {

@@ -1,6 +1,6 @@
 
 if T==nil then
-  (Message or print)('\a\n >>> testC not active: skipping API tests <<<\n\a')
+  (Message or _print)('\a\n >>> testC not active: skipping API tests <<<\n\a')
   return
 end
 
@@ -15,7 +15,7 @@ end
 function pack(...) return arg end
 
 
-print('testing C API')
+_print('testing C API')
 
 -- testing allignment
 a = T.d2s(12458954321123)
@@ -122,7 +122,7 @@ assert(count(3) == 2)
 assert(count('alo') == 1)
 assert(count('32') == 2)
 assert(count({}) == 1)
-assert(count(print) == 2)
+assert(count(_print) == 2)
 assert(count(function () end) == 1)
 assert(count(nil) == 1)
 assert(count(io.stdin) == 1)
@@ -180,9 +180,9 @@ x, y = T.testC("gettable 2; pushvalue 4; gettable 2; return 2",
 assert(x == 0 and y == 12)
 T.testC("settable -5", a, 3, 4, "x", 15)
 assert(a.x == 15)
-a[a] = print
+a[a] = _print
 x = T.testC("gettable 2; return 1", a)  -- table and key are the same object!
-assert(x == print)
+assert(x == _print)
 T.testC("settable 2", a, "x")    -- table and key are the same object!
 assert(a[a] == "x")
 
@@ -287,9 +287,9 @@ end
 
 function printlocks ()
   local n = T.testC("gettable R; return 1", "n")
-  print("n", n)
+  _print("n", n)
   for i=0,n do
-    print(i, T.testC("gettable R; return 1", i))
+    _print(i, T.testC("gettable R; return 1", i))
   end
 end
 
@@ -348,7 +348,7 @@ do
   local x = collectgarbage("count");
   local a = T.newuserdata(5001)
   assert(T.testC("objsize 2; return 1", a) == 5001)
-  assert(collectgarbage("count") >= x+4) 
+  assert(collectgarbage("count") >= x+4)
   a = nil
   collectgarbage();
   assert(collectgarbage("count") <= x+1)
@@ -448,7 +448,7 @@ collectgarbage()
 assert(table.getn(cl) == 1 and cl[1] == x)   -- old `x' must be collected
 
 -- testing lua_equal
-assert(T.testC("equal 2 4; return 1", print, 1, print, 20))
+assert(T.testC("equal 2 4; return 1", _print, 1, _print, 20))
 assert(T.testC("equal 3 2; return 1", 'alo', "alo"))
 assert(T.testC("equal 2 3; return 1", nil, nil))
 assert(not T.testC("equal 2 3; return 1", {}, {}))
@@ -473,7 +473,7 @@ do
   assert(f(10) ~= f(10))
 end
 
-print'+'
+_print'+'
 
 
 
@@ -558,7 +558,7 @@ T.closestate(L1)
 
 L1 = nil
 
-print('+')
+_print('+')
 
 -------------------------------------------------------------------------
 -- testing memory limits
@@ -592,7 +592,7 @@ function testamem (s, f)
     end
   end
   T.totalmem(1000000000)  -- restore high limit
-  print("\nlimit for " .. s .. ": " .. M-oldM)
+  _print("\nlimit for " .. s .. ": " .. M-oldM)
   return b
 end
 
@@ -697,7 +697,7 @@ testamem("coroutines", function ()
   return a()
 end)
 
-print'+'
+_print'+'
 
 -- testing some auxlib functions
 assert(T.gsub("alo.alo.uhuh.", ".", "//") == "alo//alo//uhuh//")
@@ -707,5 +707,4 @@ assert(T.gsub("...", ".", "/.") == "/././.")
 assert(T.gsub("...", "...", "") == "")
 
 
-print'OK'
-
+_print'OK'

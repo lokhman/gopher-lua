@@ -1,4 +1,4 @@
-print('testing vararg')
+_print('testing vararg')
 
 _G.arg = nil
 
@@ -39,14 +39,14 @@ local b,c = next(_G)
 assert(a[1] == b and a[2] == c and a.n == 2)
 a = vararg(call(call, {c12, {1,2}}))
 assert(a.n == 2 and a[1] == 55 and a[2] == 2)
-a = call(print, {'+'})
+a = call(_print, {'+'})
 assert(a == nil)
 --]]
 
 local t = {1, 10}
 function t:f (...) return self[arg[1]]+arg.n end
 assert(t:f(1,4) == 3 and t:f(2) == 11)
-print('+')
+_print('+')
 
 lim = 20
 local i, a = 1, {}
@@ -70,7 +70,7 @@ i = 1
 while i <= lim do a[i] = i; i=i+1 end
 assert(call(math.max, a) == lim)
 
-print("+")
+_print("+")
 
 
 -- new-style varargs
@@ -124,5 +124,4 @@ assert(a[1] == 5 and a[2] == 7 and a[3] == nil)
 pcall(select, 10000)
 pcall(select, -10000)
 
-print('OK')
-
+_print('OK')

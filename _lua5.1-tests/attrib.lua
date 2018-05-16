@@ -1,145 +1,13 @@
 do --[
 
-print "testing require"
+_print "testing require"
 
 assert(require"string" == string)
 assert(require"math" == math)
 assert(require"table" == table)
-assert(require"io" == io)
-assert(require"os" == os)
-assert(require"debug" == debug)
-assert(require"coroutine" == coroutine)
 
-assert(type(package.path) == "string")
-assert(type(package.cpath) == "string")
 assert(type(package.loaded) == "table")
 assert(type(package.preload) == "table")
-
-
-local DIR = "libs/"
-
-local function createfiles (files, preextras, posextras)
-  for n,c in pairs(files) do
-    io.output(DIR..n)
-    io.write(string.format(preextras, n))
-    io.write(c)
-    io.write(string.format(posextras, n))
-    io.close(io.output())
-  end
-end
-
-function removefiles (files)
-  for n in pairs(files) do
-    os.remove(DIR..n)
-  end
-end
-
-local files = {
-  ["A.lua"] = "",
-  ["B.lua"] = "assert(...=='B');require 'A'",
-  ["A.lc"] = "",
-  ["A"] = "",
-  ["L"] = "",
-  ["XXxX"] = "",
-  ["C.lua"] = "package.loaded[...] = 25; require'C'"
-}
-
-AA = nil
-local extras = [[
-NAME = '%s'
-REQUIRED = ...
-return AA]]
-
-createfiles(files, "", extras)
-
-
-local oldpath = package.path
-
-package.path = string.gsub("D/?.lua;D/?.lc;D/?;D/??x?;D/L", "D/", DIR)
-
-local try = function (p, n, r)
-  NAME = nil
-  local rr = require(p)
-  assert(NAME == n)
-  assert(REQUIRED == p)
-  assert(rr == r)
-end
-
-assert(require"C" == 25)
-assert(require"C" == 25)
-AA = nil
-try('B', 'B.lua', true)
-assert(package.loaded.B)
-assert(require"B" == true)
-assert(package.loaded.A)
-package.loaded.A = nil
-try('B', nil, true)   -- should not reload package
-try('A', 'A.lua', true)
-package.loaded.A = nil
-os.remove(DIR..'A.lua')
-AA = {}
-try('A', 'A.lc', AA)  -- now must find second option
-assert(require("A") == AA)
-AA = false
-try('K', 'L', false)     -- default option
-try('K', 'L', false)     -- default option (should reload it)
-assert(rawget(_G, "_REQUIREDNAME") == nil)
-
-AA = "x"
-try("X", "XXxX", AA)
-
-
-removefiles(files)
-
-
--- testing require of sub-packages
-
-package.path = string.gsub("D/?.lua;D/?/init.lua", "D/", DIR)
-
-files = {
-  ["P1/init.lua"] = "AA = 10",
-  ["P1/xuxu.lua"] = "AA = 20",
-}
-
-createfiles(files, "module(..., package.seeall)\n", "")
-AA = 0
-
-local m = assert(require"P1")
-assert(m == P1 and m._NAME == "P1" and AA == 0 and m.AA == 10)
-assert(require"P1" == P1 and P1 == m)
-assert(require"P1" == P1)
-assert(P1._PACKAGE == "")
-
-local m = assert(require"P1.xuxu")
-assert(m == P1.xuxu and m._NAME == "P1.xuxu" and AA == 0 and m.AA == 20)
-assert(require"P1.xuxu" == P1.xuxu and P1.xuxu == m)
-assert(require"P1.xuxu" == P1.xuxu)
-assert(require"P1" == P1)
-assert(P1.xuxu._PACKAGE == "P1.")
-assert(P1.AA == 10 and P1._PACKAGE == "")
-assert(P1._G == _G and P1.xuxu._G == _G)
-
-
-
-removefiles(files)
-
-
-package.path = ""
-assert(not pcall(require, "file_does_not_exist"))
-package.path = "??\0?"
-assert(not pcall(require, "file_does_not_exist1"))
-
-package.path = oldpath
-
--- check 'require' error message
--- local fname = "file_does_not_exist2"
--- local m, err = pcall(require, fname)
--- for t in string.gmatch(package.path..";"..package.cpath, "[^;]+") do
---   t = string.gsub(t, "?", fname)
---   print(t, err)
---   assert(string.find(err, t, 1, true))
--- end
-
 
 local function import(...)
   local f = {...}
@@ -173,69 +41,11 @@ assert(x == 0)
 assert(not pcall(module, "x"))
 assert(not pcall(module, "math.sin"))
 
-
--- testing C libraries
-
-
-local p = ""   -- On Mac OS X, redefine this to "_"
-
--- assert(loadlib == package.loadlib)   -- only for compatibility
--- local f, err, when = package.loadlib("libs/lib1.so", p.."luaopen_lib1")
-local f = nil
-if not f then
-  (Message or print)('\a\n >>> cannot load dynamic library <<<\n\a')
-  print(err, when)
-else
-  f()   -- open library
-  assert(require("lib1") == lib1)
-  collectgarbage()
-  assert(lib1.id("x") == "x")
-  f = assert(package.loadlib("libs/lib1.so", p.."anotherfunc"))
-  assert(f(10, 20) == "1020\n")
-  f, err, when = package.loadlib("libs/lib1.so", p.."xuxu")
-  assert(not f and type(err) == "string" and when == "init")
-  package.cpath = "libs/?.so"
-  require"lib2"
-  assert(lib2.id("x") == "x")
-  local fs = require"lib1.sub"
-  assert(fs == lib1.sub and next(lib1.sub) == nil)
-  module("lib2", package.seeall)
-  f = require"-lib2"
-  assert(f.id("x") == "x" and _M == f and _NAME == "lib2")
-  module("lib1.sub", package.seeall)
-  assert(_M == fs)
-  setfenv(1, _G)
- 
-end
--- f, err, when = package.loadlib("donotexist", p.."xuxu")
--- assert(not f and type(err) == "string" and (when == "open" or when == "absent"))
-
-
--- testing preload
-
-do
-  local p = package
-  package = {}
-  p.preload.pl = function (...)
-    module(...)
-    function xuxu (x) return x+20 end
-  end
-
-  require"pl"
-  assert(require"pl" == pl)
-  assert(pl.xuxu(10) == 30)
-
-  package = p
-  assert(type(package.path) == "string")
-end
-
-
-
 end  --]
 
-print('+')
+_print('+')
 
-print("testing assignments, logical operators, and constructors")
+_print("testing assignments, logical operators, and constructors")
 
 local res, res2 = 27
 
@@ -291,7 +101,7 @@ assert(not not a == true)
 assert(not not (6 or nil) == true)
 assert(not not (nil and 56) == false)
 assert(not not (nil and true) == false)
-print('+')
+_print('+')
 
 a = {}
 a[true] = 20
@@ -305,18 +115,18 @@ for i=3000,-3000,-1 do a[i] = i; end
 a[10e30] = "alo"; a[true] = 10; a[false] = 20
 assert(a[10e30] == 'alo' and a[not 1] == 20 and a[10<20] == 10)
 for i=3000,-3000,-1 do assert(a[i] == i); end
-a[print] = assert
-a[f] = print
+a[_print] = assert
+a[f] = _print
 a[a] = a
-assert(a[a][a][a][a][print] == assert)
-a[print](a[a[f]] == a[print])
+assert(a[a][a][a][a][_print] == assert)
+a[_print](a[a[f]] == a[_print])
 a = nil
 
-a = {10,9,8,7,6,5,4,3,2; [-3]='a', [f]=print, a='a', b='ab'}
+a = {10,9,8,7,6,5,4,3,2; [-3]='a', [f]=_print, a='a', b='ab'}
 a, a.x, a.y = a, a[-3]
-assert(a[1]==10 and a[-3]==a.a and a[f]==print and a.x=='a' and not a.y)
+assert(a[1]==10 and a[-3]==a.a and a[f]==_print and a.x=='a' and not a.y)
 a[1], f(a)[2], b, c = {['alo']=assert}, 10, a[1], a[f], 6, 10, 23, f(a), 2
-a[1].alo(a[2]==10 and b==10 and c==print)
+a[1].alo(a[2]==10 and b==10 and c==_print)
 
 a[2^31] = 10; a[2^31+1] = 11; a[-2^31] = 12;
 a[2^32] = 13; a[-2^32] = 14; a[2^32+1] = 15; a[10^33] = 16;
@@ -336,6 +146,6 @@ a = nil
 --          b[3] == 1)
 -- end
 
-print('OK')
+_print('OK')
 
 return res

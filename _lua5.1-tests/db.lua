@@ -2,7 +2,7 @@
 
 local function dostring(s) return assert(loadstring(s))() end
 
-print"testing debug library and debug information"
+_print"testing debug library and debug information"
 
 do
 local a=1
@@ -13,7 +13,7 @@ function test (s, l, p)
   local function f (event, line)
     assert(event == 'line')
     local l = table.remove(l, 1)
-    if p then print(l, line) end
+    if p then _print(l, line) end
     assert(l == line, "wrong trace!!")
   end
   debug.sethook(f,"l"); loadstring(s)(); debug.sethook()
@@ -22,7 +22,7 @@ end
 
 
 do
-  local a = debug.getinfo(print)
+  local a = debug.getinfo(_print)
   assert(a.what == "C" and a.short_src == "[C]")
   local b = debug.getinfo(test, "SfL")
   assert(b.name == nil and b.what == "Lua" and b.linedefined == 11 and
@@ -152,7 +152,7 @@ test([[for i=1,4 do a=1 end]], {1,1,1,1,1})
 
 
 
-print'+'
+_print'+'
 
 a = {}; L = nil
 local glob = 1
@@ -179,7 +179,7 @@ function f(a,b)
   local _, y = debug.getlocal(1, 2)
   assert(x == a and y == b)
   assert(debug.setlocal(2, 3, "pera") == "AA".."AA")
-  assert(debug.setlocal(2, 4, "maçã") == "B")
+  assert(debug.setlocal(2, 4, "maï¿½ï¿½") == "B")
   x = debug.getinfo(2)
   assert(x.func == g and x.what == "Lua" and x.name == 'g' and
          x.nups == 0 and string.find(x.source, "^@.*db%.lua"))
@@ -206,9 +206,9 @@ assert(debug.getinfo(1, "l").currentline == L+11)  -- check count of lines
 function g(...)
   do local a,b,c; a=math.sin(40); end
   local feijao
-  local AAAA,B = "xuxu", "mamão"
+  local AAAA,B = "xuxu", "mamï¿½o"
   f(AAAA,B)
-  assert(AAAA == "pera" and B == "maçã")
+  assert(AAAA == "pera" and B == "maï¿½ï¿½")
   do
      local B = 13
      local x,y = debug.getlocal(1,5)
@@ -219,7 +219,7 @@ end
 g()
 
 
-assert(a[f] and a[g] and a[assert] and a[debug.getlocal] and not a[print])
+assert(a[f] and a[g] and a[assert] and a[debug.getlocal] and not a[_print])
 
 
 -- tests for manipulating non-registered locals (C and Lua temporaries)
@@ -241,7 +241,7 @@ end
 function g(a,b) return (a+1) + f() end
 
 assert(g(0,0) == 30)
- 
+
 
 debug.sethook(nil);
 assert(debug.gethook() == nil)
@@ -257,7 +257,7 @@ debug.sethook(function (e)
   dostring("XX = 12")  -- test dostring inside hooks
   -- testing errors inside hooks
   assert(not pcall(loadstring("a='joao'+1")))
-  debug.sethook(function (e, l) 
+  debug.sethook(function (e, l)
     assert(debug.getinfo(2, "l").currentline == l)
     local f,m,c = debug.gethook()
     assert(e == "line")
@@ -308,8 +308,8 @@ assert(t.a == 1 and t.b == 2 and t.c == 3)
 assert(debug.setupvalue(foo1, 1, "xuxu") == "b")
 assert(({debug.getupvalue(foo2, 3)})[2] == "xuxu")
 -- cannot manipulate C upvalues from Lua
-assert(debug.getupvalue(io.read, 1) == nil)  
-assert(debug.setupvalue(io.read, 1, 10) == nil)  
+assert(debug.getupvalue(io.read, 1) == nil)
+assert(debug.setupvalue(io.read, 1, 10) == nil)
 
 
 -- testing count hooks
@@ -322,7 +322,7 @@ local f,m,c = debug.gethook()
 assert(m == "" and c == 4)
 debug.sethook(function (e) a=a+1 end, "", 4000)
 a=0; for i=1,1000 do end; assert(a == 0)
-debug.sethook(print, "", 2^24 - 1)   -- count upperbound
+debug.sethook(_print, "", 2^24 - 1)   -- count upperbound
 local f,m,c = debug.gethook()
 assert(({debug.gethook()})[3] == 2^24 - 1)
 debug.sethook()
@@ -342,7 +342,7 @@ local function f (x)
     assert(not pcall(getfenv, 5))
     assert(debug.getinfo(5, "S").what == "main")
     assert(getfenv(5))
-    print"+"
+    _print"+"
     end
 end
 
@@ -378,13 +378,13 @@ end
 foo(lim)
 
 
-print"+"
+_print"+"
 
 
 -- testing traceback
 
-assert(debug.traceback(print) == print)
-assert(debug.traceback(print, 4) == print)
+assert(debug.traceback(_print) == _print)
+assert(debug.traceback(_print, 4) == _print)
 assert(string.find(debug.traceback("hi", 4), "^hi\n"))
 assert(string.find(debug.traceback("hi"), "^hi\n"))
 assert(not string.find(debug.traceback("hi"), "'traceback'"))
@@ -495,5 +495,4 @@ pcall(co)
 assert(type(debug.getregistry()) == "table")
 
 
-print"OK"
-
+_print"OK"

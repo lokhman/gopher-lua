@@ -1,4 +1,4 @@
-print("testing errors")
+_print("testing errors")
 
 function doit (s)
   local f, msg = loadstring(s)
@@ -94,7 +94,7 @@ x.a()]], "field 'a'")
 checkmessage([[
 prefix = nil
 insert = nil
-while 1 do  
+while 1 do
   local a
   if nil then break end
   insert(prefix, a)
@@ -106,11 +106,11 @@ checkmessage([[  -- tail call
 
 checkmessage([[collectgarbage("nooption")]], "invalid option")
 
-checkmessage([[x = print .. "a"]], "concatenate")
+checkmessage([[x = _print .. "a"]], "concatenate")
 
 checkmessage("getmetatable(io.stdin).__gc()", "no value")
 
-print'+'
+_print'+'
 
 
 -- testing line error
@@ -121,9 +121,9 @@ function lineerror (s)
   return line and line+0
 end
 
-assert(lineerror"local a\n for i=1,'a' do \n print(i) \n end" == 2)
-assert(lineerror"\n local a \n for k,v in 3 \n do \n print(k) \n end" == 3)
-assert(lineerror"\n\n for k,v in \n 3 \n do \n print(k) \n end" == 4)
+assert(lineerror"local a\n for i=1,'a' do \n _print(i) \n end" == 2)
+assert(lineerror"\n local a \n for k,v in 3 \n do \n _print(k) \n end" == 3)
+assert(lineerror"\n\n for k,v in \n 3 \n do \n _print(k) \n end" == 4)
 assert(lineerror"function a.x.y ()\na=a+1\nend" == 1)
 
 local p = [[
@@ -186,7 +186,7 @@ function f() error{msg='x'} end
 res, msg = xpcall(f, function (r) return {msg=r.msg..'y'} end)
 assert(msg.msg == 'xy')
 
-print('+')
+_print('+')
 checksyntax("syntax error", "", "error", 1)
 checksyntax("1.000", "", "1.000", 1)
 checksyntax("[[a]]", "", "[[a]]", 1)
@@ -197,7 +197,7 @@ checksyntax("\255a = 1", "", "\255", 1)
 
 doit('I = loadstring("a=9+"); a=3')
 assert(a==3 and I == nil)
-print('+')
+_print('+')
 
 lim = 1000
 if rawget(_G, "_soft") then lim = 100 end
@@ -240,11 +240,11 @@ assert(string.find(b, "line 3"))
 -- local variables
 s = "\nfunction foo ()\n  local "
 for j = 1,300 do
-  s = s.."a"..j..", " 
+  s = s.."a"..j..", "
 end
 s = s.."b\n"
 local a,b = loadstring(s)
 assert(string.find(b, "line 2"))
 
 
-print('OK')
+_print('OK')

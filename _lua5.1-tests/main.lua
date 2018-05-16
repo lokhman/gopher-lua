@@ -1,6 +1,6 @@
 # testing special comment on first line
 
-print ("testing lua.c options")
+_print ("testing lua.c options")
 
 assert(os.execute() ~= 0)   -- machine has a system command
 
@@ -13,7 +13,7 @@ do
   while arg[i] do i=i-1 end
   progname = '"'..arg[i+1]..'"'
 end
-print(progname)
+_print(progname)
 
 local prepfile = function (s, p)
   p = p or prog
@@ -27,7 +27,7 @@ function checkout (s)
   local t = io.read("*a")
   io.input():close()
   assert(os.remove(out))
-  if s ~= t then print(string.format("'%s' - '%s'\n", s, t)) end
+  if s ~= t then _print(string.format("'%s' - '%s'\n", s, t)) end
   assert(s == t)
   return t
 end
@@ -43,13 +43,13 @@ function RUN (...)
 end
 
 function NoRun (...)
-  print("\n(the next error is expected by the test)")
+  _print("\n(the next error is expected by the test)")
   assert(auxrun(...) ~= 0)
 end
 
 -- test 2 files
-prepfile("print(1); a=2")
-prepfile("print(a)", otherprog)
+prepfile("_print(1); a=2")
+prepfile("_print(a)", otherprog)
 RUN("lua -l %s -l%s -lstring -l io %s > %s", prog, otherprog, otherprog, out)
 checkout("1\n2\n2\n")
 
@@ -74,15 +74,15 @@ RUN("lua - < %s > %s", prog, out)
 checkout("")
 
 -- test many arguments
-prepfile[[print(({...})[30])]]
+prepfile[[_print(({...})[30])]]
 RUN("lua %s %s > %s", prog, string.rep(" a", 30), out)
 checkout("a\n")
 
-RUN([[lua "-eprint(1)" -ea=3 -e "print(a)" > %s]], out)
+RUN([[lua "-eprint(1)" -ea=3 -e "_print(a)" > %s]], out)
 checkout("1\n3\n")
 
 prepfile[[
-  print(
+  _print(
 1, a
 )
 ]]
@@ -91,15 +91,15 @@ checkout("1\tnil\n")
 
 prepfile[[
 = (6*2-6) -- ===
-a 
+a
 = 10
-print(a)
+_print(a)
 = a]]
 RUN([[lua -e"_PROMPT='' _PROMPT2=''" -i < %s > %s]], prog, out)
 checkout("6\n10\n10\n\n")
 
 prepfile("a = [[b\nc\nd\ne]]\n=a")
-print(prog)
+_print(prog)
 RUN([[lua -e"_PROMPT='' _PROMPT2=''" -i < %s > %s]], prog, out)
 checkout("b\nc\nd\ne\n\n")
 
@@ -110,15 +110,15 @@ a = 2
 RUN([[lua "-e_PROMPT='%s'" -i < %s > %s]], prompt, prog, out)
 checkout(string.rep(prompt, 3).."\n")
 
-s = [=[ -- 
-function f ( x ) 
+s = [=[ --
+function f ( x )
   local a = [[
 xuxu
 ]]
   local b = "\
 xuxu\n"
   if x == 11 then return 1 , 2 end  --[[ test multiple returns ]]
-  return x + 1 
+  return x + 1
   --\\
 end
 =( f( 10 ) )
@@ -128,15 +128,15 @@ s = string.gsub(s, ' ', '\n\n')
 prepfile(s)
 RUN([[lua -e"_PROMPT='' _PROMPT2=''" -i < %s > %s]], prog, out)
 checkout("11\n1\t2\n\n")
-  
+
 prepfile[[#comment in 1st line without \n at the end]]
 RUN("lua %s", prog)
 
-prepfile("#comment with a binary file\n"..string.dump(loadstring("print(1)")))
+prepfile("#comment with a binary file\n"..string.dump(loadstring("_print(1)")))
 RUN("lua %s > %s", prog, out)
 checkout("1\n")
 
-prepfile("#comment with a binary file\r\n"..string.dump(loadstring("print(1)")))
+prepfile("#comment with a binary file\r\n"..string.dump(loadstring("_print(1)")))
 RUN("lua %s > %s", prog, out)
 checkout("1\n")
 
@@ -156,4 +156,4 @@ NoRun("lua -e")
 NoRun("lua -e a")
 NoRun("lua -f")
 
-print("OK")
+_print("OK")

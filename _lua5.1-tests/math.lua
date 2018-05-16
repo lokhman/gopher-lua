@@ -1,4 +1,4 @@
-print("testing numbers and math lib")
+_print("testing numbers and math lib")
 
 do
   local a,b,c = "2", " 3e0 ", " 10  "
@@ -54,7 +54,7 @@ assert(tonumber('ffffFFFF', 16)+1 == 2^32)
 assert(tonumber('0xF') == 15)
 
 assert(1.1 == 1.+.1)
-print(100.0, 1E2, .01)
+_print(100.0, 1E2, .01)
 assert(100.0 == 1E2 and .01 == 1e-2)
 assert(1111111111111111-1111111111111110== 1000.00e-03)
 --     1234567890123456
@@ -123,27 +123,6 @@ assert(8388607 + -8388607 == 0)
 
 if rawget(_G, "_soft") then return end
 
-f = io.tmpfile()
-assert(f)
-f:write("a = {")
-i = 1
-repeat
-  f:write("{", math.sin(i), ", ", math.cos(i), ", ", i/3, "},\n")
-  i=i+1
-until i > 1000
-f:write("}")
-f:seek("set", 0)
-assert(loadstring(f:read('*a')))()
-assert(f:close())
-
-assert(eq(a[300][1], math.sin(300)))
-assert(eq(a[600][1], math.sin(600)))
-assert(eq(a[500][2], math.cos(500)))
-assert(eq(a[800][2], math.cos(800)))
-assert(eq(a[200][3], 200/3))
-assert(eq(a[1000][3], 1000/3, 0.001))
-print('+')
-
 do   -- testing NaN
   local NaN = 10e500 - 10e400
   assert(NaN ~= NaN)
@@ -161,7 +140,82 @@ do   -- testing NaN
   assert(a[NaN] == nil)
 end
 
-require "checktable"
+assert(rawget(_G, "stat") == nil)  -- module not loaded before
+
+if T == nil then
+  stat = function () _print"`querytab' nao ativo" end
+  return
+end
+
+
+function checktable (t)
+  local asize, hsize, ff = T.querytab(t)
+  local l = {}
+  for i=0,hsize-1 do
+    local key,val,next = T.querytab(t, i + asize)
+    if key == nil then
+      assert(l[i] == nil and val==nil and next==nil)
+    elseif key == "<undef>" then
+      assert(val==nil)
+    else
+      assert(t[key] == val)
+      local mp = T.hash(key, t)
+      if l[i] then
+        assert(l[i] == mp)
+      elseif mp ~= i then
+        l[i] = mp
+      else  -- list head
+        l[mp] = {mp}   -- first element
+        while next do
+          assert(ff <= next and next < hsize)
+          if l[next] then assert(l[next] == mp) else l[next] = mp end
+          table.insert(l[mp], next)
+          key,val,next = T.querytab(t, next)
+          assert(key)
+        end
+      end
+    end
+  end
+  l.asize = asize; l.hsize = hsize; l.ff = ff
+  return l
+end
+
+function mostra (t)
+  local asize, hsize, ff = T.querytab(t)
+  _print(asize, hsize, ff)
+  _print'------'
+  for i=0,asize-1 do
+    local _, v = T.querytab(t, i)
+    _print(string.format("[%d] -", i), v)
+  end
+  _print'------'
+  for i=0,hsize-1 do
+    _print(i, T.querytab(t, i+asize))
+  end
+  _print'-------------'
+end
+
+function stat (t)
+  t = checktable(t)
+  local nelem, nlist = 0, 0
+  local maxlist = {}
+  for i=0,t.hsize-1 do
+    if type(t[i]) == 'table' then
+      local n = table.getn(t[i])
+      nlist = nlist+1
+      nelem = nelem + n
+      if not maxlist[n] then maxlist[n] = 0 end
+      maxlist[n] = maxlist[n]+1
+    end
+  end
+  _print(string.format("hsize=%d  elements=%d  load=%.2f  med.len=%.2f (asize=%d)",
+    t.hsize, nelem, nelem/t.hsize, nelem/nlist, t.asize))
+  for i=1,table.getn(maxlist) do
+    local n = maxlist[i] or 0
+    _print(string.format("%5d %10d %.2f%%", i, n, n*100/nlist))
+  end
+end
+
 stat(a)
 
 a = nil
@@ -206,5 +260,4 @@ until flag or i>10000
 assert(-10 <= Min and Max<=0)
 assert(flag);
 
-
-print('OK')
+_print('OK')

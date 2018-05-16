@@ -12,12 +12,12 @@ collectgarbage("setpause", 190)
 
 ]=]
 
-print("current path:\n  " .. string.gsub(package.path, ";", "\n  "))
+_print("current path:\n  " .. string.gsub(package.path, ";", "\n  "))
 
 
 local msgs = {}
 function Message (m)
-  print(m)
+  _print(m)
   msgs[#msgs+1] = string.sub(m, 3, -3)
 end
 
@@ -26,8 +26,8 @@ local c = os.clock()
 
 assert(os.setlocale"C")
 
-local T,print,gcinfo,format,write,assert,type =
-      T,print,gcinfo,string.format,io.write,assert,type
+local T,_print,gcinfo,format,write,assert,type =
+      T,_print,gcinfo,string.format,io.write,assert,type
 
 local function formatmem (m)
   if m < 1024 then return m
@@ -43,12 +43,12 @@ end
 
 local showmem = function ()
   if not T then
-    print(format("    ---- total memory: %s ----\n", formatmem(gcinfo())))
+    _print(format("    ---- total memory: %s ----\n", formatmem(gcinfo())))
   else
     T.checkmemory()
     local a,b,c = T.totalmem()
     local d,e = gcinfo()
-    print(format(
+    _print(format(
   "\n    ---- total memory: %s (%dK), max use: %s,  blocks: %d\n",
                         formatmem(a),  d,      formatmem(c),           b))
   end
@@ -105,20 +105,20 @@ assert(dofile('verybig.lua') == 10); collectgarbage()
 dofile('files.lua')
 
 if #msgs > 0 then
-  print("\ntests not performed:")
+  _print("\ntests not performed:")
   for i=1,#msgs do
-    print(msgs[i])
+    _print(msgs[i])
   end
-  print()
+  _print()
 end
 
-print("final OK !!!")
-print('cleaning all!!!!')
+_print("final OK !!!")
+_print('cleaning all!!!!')
 
 debug.sethook(function (a) assert(type(a) == 'string') end, "cr")
 
-local _G, collectgarbage, showmem, print, format, clock =
-      _G, collectgarbage, showmem, print, format, os.clock
+local _G, collectgarbage, showmem, _print, format, clock =
+      _G, collectgarbage, showmem, _print, format, os.clock
 
 local a={}
 for n in pairs(_G) do a[n] = 1 end
@@ -134,4 +134,4 @@ collectgarbage()
 collectgarbage()
 collectgarbage();showmem()
 
-print(format("\n\ntotal time: %.2f\n", clock()-c))
+_print(format("\n\ntotal time: %.2f\n", clock()-c))

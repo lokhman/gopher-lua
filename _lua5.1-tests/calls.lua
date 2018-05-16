@@ -1,4 +1,4 @@
-print("testing functions and calls")
+_print("testing functions and calls")
 
 -- get the opportunity to test 'type' too ;)
 
@@ -7,7 +7,7 @@ assert(type(true) == 'boolean' and type(false) == 'boolean')
 assert(type(nil) == 'nil' and type(-3) == 'number' and type'x' == 'string' and
        type{} == 'table' and type(type) == 'function')
 
-assert(type(assert) == type(print))
+assert(type(assert) == type(_print))
 f = nil
 function f (x) return a:x (x) end
 assert(type(f) == 'function')
@@ -52,7 +52,7 @@ function a.b.c:f2 (x,y) self[x] = y end
 assert(a.b.c.f1(4) == 5)
 a.b.c:f2('k', 12); assert(a.b.c.k == 12)
 
-print('+')
+_print('+')
 
 t = nil   -- 'declare' t
 function f(a,b,c) local d = 'a'; t={a,b,c,d} end
@@ -74,7 +74,7 @@ assert(loadstring "loadstring 'assert(fat(6)==720)' () ")()
 a = loadstring('return fat(5), 3')
 a,b = a()
 assert(a == 120 and b == 3)
-print('+')
+_print('+')
 
 function err_on_n (n)
   if n==0 then error(); exit(1);
@@ -106,7 +106,7 @@ a = {}
 function a:deep (n) if n>0 then return self:deep(n-1) else return 101 end end
 assert(a:deep(30000) == 101)
 
-print('+')
+_print('+')
 
 
 a = nil
@@ -173,7 +173,7 @@ f = g(10)
 assert(f(9, 16) == 10+11+12+13+10+9+16+10)
 
 Y, F, f = nil
-print('+')
+_print('+')
 
 -- testing multiple returns
 
@@ -248,7 +248,7 @@ assert(debug.getinfo(a).source == "modname")
 -- i = 0
 -- local a, b = load(read1("*a = 123"))
 -- assert(not a and type(b) == "string" and i == 2)
--- 
+--
 -- a, b = load(function () error("hhi") end)
 -- assert(not a and string.find(b, "hhi"))
 
@@ -291,5 +291,5 @@ assert((function () return nil end)(4) == nil)
 assert((function () local a; return a end)(4) == nil)
 assert((function (a) return a end)() == nil)
 
-print('OK')
+_print('OK')
 return deep

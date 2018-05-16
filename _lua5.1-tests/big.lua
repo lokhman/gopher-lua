@@ -1,4 +1,4 @@
-print "testing string length overflow"
+_print "testing string length overflow"
 
 local longs = string.rep("\0", 2^25)
 local function catter (i)
@@ -8,7 +8,7 @@ local function catter (i)
 end
 rep129 = catter(129)
 local a, b = pcall(rep129, longs)
-print(b)
+_print(b)
 assert(not a and string.find(b, "overflow"))
 print('+')
 
